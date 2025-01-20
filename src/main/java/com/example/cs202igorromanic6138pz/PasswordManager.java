@@ -1,6 +1,6 @@
 package com.example.cs202igorromanic6138pz;
 
-import com.example.cs202igorromanic6138pz.UI.StartUI;
+import com.example.cs202igorromanic6138pz.MVC.MainView.StartMV;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -11,8 +11,8 @@ public class PasswordManager extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        Scene startScene = new Scene(new StartUI(stage), 200, 200);
-        stage.setTitle("I Love MILFS");
+        Scene startScene = new Scene(new StartMV(stage), 600, 450);
+        stage.setTitle("I Love MIL(an Tomic)FS");
         stage.setScene(startScene);
         stage.show();
     }
