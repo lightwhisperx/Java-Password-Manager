@@ -26,6 +26,7 @@ public class RegisterController
         if(matchingMasters())
         {
             registerMV.changeSceneToMain(stage);
+            dboMvc.getDbOperations().insertIntoMasterTable(dboMvc.getDatabase().getCon(), dboMvc.getHash().toHash(registerMV.getTfConfirmMaster().getText()));
         }
         else
         {

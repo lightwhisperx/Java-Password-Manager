@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 
 public class PasswordManager extends Application {
@@ -12,8 +13,9 @@ public class PasswordManager extends Application {
     public void start(Stage stage) throws IOException {
 
         Scene startScene = new Scene(new StartMV(stage), 600, 450);
-        stage.setTitle("I Love MIL(an Tomic)FS");
+        stage.setTitle("Password Manager");
         stage.setScene(startScene);
+        startScene.setUserAgentStylesheet("styles.css");
         stage.show();
     }
 

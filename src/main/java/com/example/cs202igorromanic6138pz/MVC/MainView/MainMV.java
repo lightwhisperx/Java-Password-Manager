@@ -116,6 +116,7 @@ public class MainMV extends SceneSceneChangeController
         setLeft(vbLeft);
 
         tvData.setEditable(false);
+        setTvData();
         VBox vbCenter = new VBox();
         vbCenter.setPadding(new Insets(10));
         vbCenter.getChildren().addAll(lConfirmation, tvData, btnRefreshTv, btnLogout);
@@ -123,12 +124,6 @@ public class MainMV extends SceneSceneChangeController
         vbCenter.setAlignment(Pos.CENTER);
         setCenter(vbCenter);
 
-        tvPlatformCol.setCellValueFactory(new PropertyValueFactory<>("Platform"));
-        tvUsernameCol.setCellValueFactory(new PropertyValueFactory<>("Username"));
-        tvPasswordCol.setCellValueFactory(new PropertyValueFactory<>("Password"));
-
-        tvData.getColumns().setAll(tvPlatformCol, tvUsernameCol, tvPasswordCol);
-        tvData.setItems(dboMvc.getDbOperations().fetchData(dboMvc.getDatabase().getCon()));
 
         tfGeneratePassword.setEditable(false);
         VBox vbRight = new VBox();
@@ -138,12 +133,22 @@ public class MainMV extends SceneSceneChangeController
         vbRight.setAlignment(Pos.CENTER);
         setRight(vbRight);
 
-        TableView.TableViewSelectionModel selectionModel = tvData.getSelectionModel();
-        selectionModel.setSelectionMode(SelectionMode.SINGLE);
-
         tfPassword.textProperty().addListener((observable, oldValue, newValue) -> {
             PasswordStrengthChecker psc = new PasswordStrengthChecker(newValue);
             lPasswordStrength.setText(psc.checkStrength(newValue));
         });
+    }
+
+    private void setTvData()
+    {
+        TableView.TableViewSelectionModel selectionModel = tvData.getSelectionModel();
+        selectionModel.setSelectionMode(SelectionMode.SINGLE);
+
+        tvPlatformCol.setCellValueFactory(new PropertyValueFactory<>("Platform"));
+        tvUsernameCol.setCellValueFactory(new PropertyValueFactory<>("Username"));
+        tvPasswordCol.setCellValueFactory(new PropertyValueFactory<>("Password"));
+
+        tvData.getColumns().setAll(tvPlatformCol, tvUsernameCol, tvPasswordCol);
+        tvData.setItems(dboMvc.getDbOperations().fetchData(dboMvc.getDatabase().getCon()));
     }
 }

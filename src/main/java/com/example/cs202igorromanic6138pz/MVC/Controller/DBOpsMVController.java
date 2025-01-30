@@ -1,6 +1,6 @@
 package com.example.cs202igorromanic6138pz.MVC.Controller;
 
-import com.example.cs202igorromanic6138pz.Database.DB;
+import com.example.cs202igorromanic6138pz.Database.DBInit;
 import com.example.cs202igorromanic6138pz.Database.DBOperations;
 import com.example.cs202igorromanic6138pz.Security.AESEncryptor;
 import com.example.cs202igorromanic6138pz.Security.Hash;
@@ -8,7 +8,7 @@ import com.example.cs202igorromanic6138pz.Security.Hash;
 public class DBOpsMVController
 {
     private AESEncryptor AESEncryptor;
-    private DB database;
+    private DBInit database;
     private DBOperations dbOperations;
     private Hash hash;
 
@@ -16,7 +16,7 @@ public class DBOpsMVController
         return AESEncryptor;
     }
 
-    public DB getDatabase() {
+    public DBInit getDatabase() {
         return database;
     }
 
@@ -31,7 +31,7 @@ public class DBOpsMVController
     public DBOpsMVController()
     {
         AESEncryptor = new AESEncryptor();
-        database = new DB();
+        database = new DBInit();
         dbOperations = new DBOperations(database);
         hash = new Hash();
     }

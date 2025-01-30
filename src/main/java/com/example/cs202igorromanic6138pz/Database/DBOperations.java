@@ -5,17 +5,14 @@ import com.example.cs202igorromanic6138pz.User.Credentials;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DBOperations
 {
-    private DB database;
+    private DBInit database;
     private AESEncryptor encryptor;
 
-    public DBOperations(DB database) {
+    public DBOperations(DBInit database) {
         this.database = database;
         this.encryptor = new AESEncryptor();
     }
@@ -23,55 +20,38 @@ public class DBOperations
     public void insertIntoPassDB(Connection con, String platform, String username, String password)
     {
         con = database.getCon();
-        String saveEntry = String.format("INSERT INTO passwords(platform, username, password) VALUES ('%s', '%s', '%s')",
-                platform, username, password);
 
         try
         {
-            database.setSt(con.createStatement());
-            int rs = database.getSt().executeUpdate(saveEntry);
+            database.setSt(con.prepareCall("{call save_credentials(?, ?, ?, ?)}"));
+            database.getSt().setString(1, platform);
+            database.getSt().setString(2, username);
+            database.getSt().setString(3, encryptor.encrypt(password));
+            database.getSt().setString(4, encryptor.getB64Key());
+            database.getSt().execute();
         }
         catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        catch(Exception ex)
         {
             ex.printStackTrace();
         }
     }
 
-    public void deleteFromPassDB(Connection con, String platform, String username, String password)
-    {
-        con = database.getCon();
-        String deleteEntry = String.format("DELETE FROM passwords WHERE platform = '%s' AND username = '%s' AND password = '%s';",
-                platform, username, password);
-
-        try
-        {
-            database.setSt(con.createStatement());
-            int rs = database.getSt().executeUpdate(deleteEntry);
-        }
-        catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
-    public void editInPassDB(Connection con, String platformOld, String usernameOld, String passwordOld, String platformNew, String usernameNew, String passwordNew)
+    public void deleteFromPassDB(Connection con, String platform, String username)
     {
         con = database.getCon();
 
         try
         {
-            String editEntry = String.format("UPDATE passwords SET platform = '%s', username = '%s', password = '%s' " +
-                            "WHERE platform = '%s' AND username = '%s' AND password = '%s'",
-                    platformOld, usernameOld, passwordOld, platformNew, usernameNew, encryptor.encrypt(passwordNew));
-
-            database.setSt(con.createStatement());
-            int rs = database.getSt().executeUpdate(editEntry);
+            database.setSt(con.prepareCall("{call delete_cred_by_id(?, ?)}"));
+            database.getSt().setString(1, platform);
+            database.getSt().setString(2, username);
+            database.getSt().execute();
         }
         catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-        catch (Exception ex)
         {
             ex.printStackTrace();
         }
@@ -80,44 +60,17 @@ public class DBOperations
     public void insertIntoMasterTable(Connection con, String masterPass)
     {
         con = database.getCon();
-        String insertMaster = String.format("INSERT INTO masterpass(masterPass) VALUES ('%s')", masterPass);
 
         try
         {
-            database.setSt(con.createStatement());
-            int rowsAffected = database.getSt().executeUpdate(insertMaster);
+            database.setSt(con.prepareCall("{call insert_into_master(?)}"));
+            database.getSt().setString(1, masterPass);
+            database.getSt().execute();
         }
         catch (SQLException ex)
         {
             ex.printStackTrace();
         }
-    }
-
-    public String selectFromMaster(Connection con)
-    {
-        con = database.getCon();
-        String selectEntry = String.format("SELECT masterPass FROM masterpass");
-        String password = null;
-
-        try
-        {
-            database.setSt(con.createStatement());
-            ResultSet rs = database.getSt().executeQuery(selectEntry);
-
-            if(rs.next())
-            {
-                password = rs.getString("masterPass");
-            }
-
-            rs.close();
-            database.getSt().close();
-        }
-        catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return password;
     }
 
     public ObservableList<Credentials> fetchData(Connection con)
@@ -126,13 +79,30 @@ public class DBOperations
 
         try
         {
-            String fetchQuery = String.format("SELECT platform, username, password FROM passwords");
-            ResultSet rs = database.getSt().executeQuery(fetchQuery);
+            database.setSt(con.prepareCall("{call fetch_data()}"));
+            ResultSet rs = database.getSt().executeQuery();
 
             while(rs.next())
             {
-                data.addAll(new Credentials(rs.getString("platform"), rs.getString("username"), encryptor.decrypt(rs.getString("password"))));
+                String platform = rs.getString("platform");
+                String username = rs.getString("username");
+                String encryptedPassword = rs.getString("password");
+
+                String aesKey = fetchKey(database.getCon(), platform, username);
+
+                String decryptedPassword = "";
+
+                if(aesKey != null)
+                {
+                    encryptor.setSecretKey(encryptor.createKeyFromExisting(aesKey));
+                    decryptedPassword = encryptor.decrypt(encryptedPassword);
+                }
+
+                data.add(new Credentials(platform, username, decryptedPassword));
             }
+
+            rs.close();
+            database.getSt().close();
         }
         catch (Exception ex)
         {
@@ -142,4 +112,42 @@ public class DBOperations
         return data;
     }
 
+    public String fetchKey(Connection con, String platform, String username)
+    {
+        int credentialsId = -1;
+        String aesKey = null;
+
+        try
+        {
+            database.setSt(con.prepareCall("{call fetch_cred_id(?, ?, ?)}"));
+            database.getSt().setString(1, platform);
+            database.getSt().setString(2, username);
+            database.getSt().registerOutParameter(3, java.sql.Types.INTEGER);
+
+            database.getSt().execute();
+
+            credentialsId = database.getSt().getInt(3);
+            database.getSt().close();
+
+            if(credentialsId == 0)
+            {
+                return "No matching Credentials and Key";
+            }
+
+            database.setSt(con.prepareCall("call fetch_aes_key(?, ?)"));
+            database.getSt().setInt(1, credentialsId);
+            database.getSt().registerOutParameter(2, java.sql.Types.VARBINARY);
+
+            database.getSt().execute();
+
+            aesKey = database.getSt().getString(2);
+            database.getSt().close();
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return aesKey;
+    }
 }

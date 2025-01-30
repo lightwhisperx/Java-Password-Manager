@@ -10,6 +10,7 @@ module com.example.cs202igorromanic6138pz {
     requires com.almasb.fxgl.all;
     requires com.fasterxml.jackson.databind;
     requires java.sql;
+    requires org.jsoup;
 
     opens com.example.cs202igorromanic6138pz to javafx.fxml;
     exports com.example.cs202igorromanic6138pz;

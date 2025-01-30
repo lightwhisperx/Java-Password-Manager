@@ -42,7 +42,7 @@ public class MainController
             credentials = new Credentials(mainMV.getTfPlatform().getText(), mainMV.getTfUsername().getText(), mainMV.getTfPassword().getText());
             try
             {
-                dboMvc.getDbOperations().insertIntoPassDB(dboMvc.getDatabase().getCon(), credentials.getPlatform(), credentials.getUsername(), dboMvc.getEncryptor().encrypt(credentials.getPassword()));
+                dboMvc.getDbOperations().insertIntoPassDB(dboMvc.getDatabase().getCon(), credentials.getPlatform(), credentials.getUsername(), credentials.getPassword());
             }
             catch (Exception ex)
             {
@@ -58,22 +58,24 @@ public class MainController
 
     private void deleteHandler()
     {
-        String row = mainMV.getTvData().getSelectionModel().getSelectedItem().toString();
+        if(mainMV.getTvData().getSelectionModel().getSelectedItem() == null)
+        {
+            mainMV.getlConfirmation().setText("No password selected!");
+        }
+
+        Credentials credentials = mainMV.getTvData().getSelectionModel().getSelectedItem();
 
         Pattern pattern = Pattern.compile("Platform: (.*?)\\nUsername: (.*?)\\nPassword: (.*)");
-        Matcher matcher = pattern.matcher(row);
+        Matcher matcher = pattern.matcher(credentials.toString());
 
         if (matcher.find()) {
             String platform = matcher.group(1).trim();
             String username = matcher.group(2).trim();
-            String password = matcher.group(3).trim();
-
-            System.out.println(password);
 
             try
             {
-                System.out.println(dboMvc.getEncryptor().encrypt(password));
-                dboMvc.getDbOperations().deleteFromPassDB(dboMvc.getDatabase().getCon(), platform, username, dboMvc.getEncryptor().encrypt(password));
+                dboMvc.getDbOperations().deleteFromPassDB(dboMvc.getDatabase().getCon(), credentials.getPlatform(), credentials.getUsername());
+                mainMV.getTvData().getItems().remove(credentials);
                 mainMV.getlConfirmation().setText("Successfully deleted credentials");
             }
             catch (Exception ex)
@@ -98,29 +100,7 @@ public class MainController
 
     private void refreshTableHandler()
     {
-        String row = mainMV.getTvData().getSelectionModel().getSelectedItem().toString();
-
-        Pattern pattern = Pattern.compile("Platform: (.*?)\\nUsername: (.*?)\\nPassword: (.*)");
-        Matcher matcher = pattern.matcher(row);
-
-        if (matcher.find()) {
-            String platform = matcher.group(1).trim();
-            String username = matcher.group(2).trim();
-            String password = matcher.group(3).trim();
-
-            System.out.println("Platform: " + platform);
-            System.out.println("Username: " + username);
-            try
-            {
-                System.out.println(dboMvc.getEncryptor().encrypt(password));
-            }
-            catch(Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        } else {
-            System.out.println("Invalid format!");
-        }
+        dboMvc.getDbOperations().fetchData(dboMvc.getDatabase().getCon());
     }
 
     private void copyGeneratedHandler()

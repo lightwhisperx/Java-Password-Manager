@@ -3,6 +3,9 @@ package com.example.cs202igorromanic6138pz.MVC.Controller;
 import com.example.cs202igorromanic6138pz.MVC.MainView.LoginMV;
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
+import java.sql.Types;
+
 public class LoginController
 {
     private final DBOpsMVController dboMvc = new DBOpsMVController();
@@ -41,17 +44,22 @@ public class LoginController
     private boolean validMaster()
     {
         String input = dboMvc.getHash().toHash(loginMV.getTfMasterPass().getText());
-        String master = null;
+        boolean isValid = false;
 
         try
         {
-            master = dboMvc.getDbOperations().selectFromMaster(dboMvc.getDatabase().getCon());
+            dboMvc.getDatabase().setSt(dboMvc.getDatabase().getCon().prepareCall("{? = CALL validate_master(?)}"));
+            dboMvc.getDatabase().getSt().registerOutParameter(1, Types.BOOLEAN);
+            dboMvc.getDatabase().getSt().setString(2, input);
+
+            dboMvc.getDatabase().getSt().execute();
+            isValid = dboMvc.getDatabase().getSt().getBoolean(1);
         }
-        catch (Exception e)
+        catch (SQLException e)
         {
             e.printStackTrace();
         }
 
-        return input.equals(master);
+        return isValid;
     }
 }

@@ -13,21 +13,29 @@ public abstract class SceneSceneChangeController extends BorderPane implements S
     @Override
     public void changeSceneToLogin(Stage stage)
     {
-        stage.setScene(new Scene(new LoginMV(stage), 600, 450));
+        Scene scene = new Scene(new LoginMV(stage), 600, 450);
+        stage.setScene(scene);
+        scene.setUserAgentStylesheet("styles.css");
     }
 
     @Override
     public void changeSceneToRegister(Stage stage) {
-        stage.setScene(new Scene(new RegisterMV(stage), 600, 450));
+        Scene scene = new Scene(new RegisterMV(stage), 600, 450);
+        stage.setScene(scene);
+        scene.setUserAgentStylesheet("styles.css");
     }
 
     @Override
     public void changeSceneToMain(Stage stage) {
-        stage.setScene(new Scene(new MainMV(stage), 600, 450));
+        Scene scene = new Scene(new MainMV(stage), 750, 600);
+        stage.setScene(scene);
+        scene.setUserAgentStylesheet("styles.css");
     }
 
     @Override
     public void changeSceneToStart(Stage stage){
-        stage.setScene(new Scene(new StartMV(stage), 600, 450));
+        Scene scene = new Scene(new StartMV(stage), 600, 450);
+        stage.setScene(scene);
+        scene.setUserAgentStylesheet("styles.css");
     }
 }
