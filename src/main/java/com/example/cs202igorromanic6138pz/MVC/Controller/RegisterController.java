@@ -5,7 +5,7 @@ import javafx.stage.Stage;
 
 public class RegisterController
 {
-    private final DBOpsMVController dboMvc = new DBOpsMVController();
+    private DBOpsMVController dboMvc;
     private final Stage stage;
     private final RegisterMV registerMV;
 
@@ -23,6 +23,7 @@ public class RegisterController
 
     private void registerHandler()
     {
+        dboMvc = new DBOpsMVController();
         if(matchingMasters())
         {
             registerMV.changeSceneToMain(stage);

@@ -1,13 +1,13 @@
 package com.example.cs202igorromanic6138pz.MVC.MainView;
 
-import com.example.cs202igorromanic6138pz.MVC.Controller.SceneSceneChangeController;
+import com.example.cs202igorromanic6138pz.MVC.Controller.SceneChangeController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class StartMV extends SceneSceneChangeController
+public class StartMV extends SceneChangeController
 {
     private Button btnLogin = new Button("Login");
     private Button btnRegister = new Button("Register");

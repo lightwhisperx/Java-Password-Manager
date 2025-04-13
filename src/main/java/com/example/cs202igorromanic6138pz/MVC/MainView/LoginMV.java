@@ -1,8 +1,7 @@
 package com.example.cs202igorromanic6138pz.MVC.MainView;
 
-import com.example.cs202igorromanic6138pz.MVC.Controller.DBOpsMVController;
 import com.example.cs202igorromanic6138pz.MVC.Controller.LoginController;
-import com.example.cs202igorromanic6138pz.MVC.Controller.SceneSceneChangeController;
+import com.example.cs202igorromanic6138pz.MVC.Controller.SceneChangeController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -13,7 +12,7 @@ import javafx.scene.control.Button;
 
 import javafx.stage.Stage;
 
-public class LoginMV extends SceneSceneChangeController
+public class LoginMV extends SceneChangeController
 {
     private final PasswordField tfMasterPass = new PasswordField();
     private final Button btnLogin = new Button("Login");

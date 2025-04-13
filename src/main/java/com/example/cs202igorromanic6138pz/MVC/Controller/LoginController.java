@@ -8,7 +8,7 @@ import java.sql.Types;
 
 public class LoginController
 {
-    private final DBOpsMVController dboMvc = new DBOpsMVController();
+    private DBOpsMVController dboMvc;
     private final Stage stage;
     private final LoginMV loginMV;
 
@@ -43,6 +43,7 @@ public class LoginController
 
     private boolean validMaster()
     {
+        dboMvc = new DBOpsMVController();
         String input = dboMvc.getHash().toHash(loginMV.getTfMasterPass().getText());
         boolean isValid = false;
 

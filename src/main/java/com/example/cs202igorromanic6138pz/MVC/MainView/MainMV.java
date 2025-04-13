@@ -1,25 +1,18 @@
 package com.example.cs202igorromanic6138pz.MVC.MainView;
 
 import com.example.cs202igorromanic6138pz.MVC.Controller.MainController;
-import com.example.cs202igorromanic6138pz.MVC.Controller.SceneSceneChangeController;
+import com.example.cs202igorromanic6138pz.MVC.Controller.SceneChangeController;
 import com.example.cs202igorromanic6138pz.User.Credentials;
 import com.example.cs202igorromanic6138pz.MVC.Controller.DBOpsMVController;
 import com.example.cs202igorromanic6138pz.PasswordCheck.PasswordStrengthChecker;
-import com.example.cs202igorromanic6138pz.PwdGenerator.PasswordGenerator;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.stage.Stage;
 
-import java.util.Random;
-
-public class MainMV extends SceneSceneChangeController
+public class MainMV extends SceneChangeController
 {
     private final TextField tfPlatform = new TextField();
     private final TextField tfUsername = new TextField();
